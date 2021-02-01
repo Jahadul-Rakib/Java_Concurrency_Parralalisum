@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 public class ProductService {
     private final ProductInfoService productInfoService;
     private final ProductReviewService productReviewService;
-    ProductInfo productInfo;
-    ProductReview productReview;
 
     public ProductService(ProductInfoService productInfoService, ProductReviewService productReviewService) {
         this.productInfoService = productInfoService;
@@ -20,11 +18,6 @@ public class ProductService {
 
     public Product retriveProductDetails(Integer productId) throws InterruptedException {
         CommonUtils.stopWatch.start();
-
-//        Runnable runnable1 = () -> productInfo = productInfoService.retriveProductInfo(productId);
-//        Runnable runnable2 = () -> productReview = productReviewService.retriveProductReview(productId);
-//        runnable1.run();
-//        runnable2.run();
 
         ProductInfoRunnable productInfoData = new ProductInfoRunnable(productId);
         Thread productInfoThread = new Thread(productInfoData);
@@ -41,34 +34,44 @@ public class ProductService {
         CommonUtils.stopWatch.stop();
         System.out.println(CommonUtils.stopWatch.getTime());
         return Product.builder()
-                .productInfo(productInfo)
-                .productReview(productReview)
+                .productInfo(productInfoData.getProductInfo())
+                .productReview(productReviewData.getProductReview())
                 .build();
     }
 
     private class ProductInfoRunnable implements Runnable {
         public Integer productId;
+        private ProductInfo productInfo;
 
         public ProductInfoRunnable(Integer productId) {
             this.productId = productId;
         }
 
+        public ProductInfo getProductInfo() {
+            return productInfo;
+        }
+
         @Override
         public void run() {
-            productInfo = productInfoService.retriveProductInfo(productId);
+            this.productInfo = productInfoService.retriveProductInfo(productId);
         }
     }
 
     private class ProductReviewRunnable implements Runnable {
         public Integer productId;
+        private ProductReview productReview;
 
         public ProductReviewRunnable(Integer productId) {
             this.productId = productId;
         }
 
+        public ProductReview getProductReview() {
+            return productReview;
+        }
+
         @Override
         public void run() {
-            productReview = productReviewService.retriveProductReview(productId);
+            this.productReview = productReviewService.retriveProductReview(productId);
         }
     }
 }
