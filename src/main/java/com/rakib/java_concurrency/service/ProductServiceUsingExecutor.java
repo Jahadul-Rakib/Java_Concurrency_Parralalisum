@@ -35,5 +35,7 @@ public class ProductServiceUsingExecutor {
                 .productInfo(productInfoFuture.get()/*But Still Block for calling get() method and wait for return value*/)
                 .productReview(productReviewFuture.get()/*But Still Block for calling get() method and wait for return value*/)
                 .build();
+
+        //CompletableFuture Can Solve this Blocking Issue.
     }
 }
